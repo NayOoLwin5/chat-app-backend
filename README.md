@@ -46,6 +46,7 @@ npm run start
 
 ## Project Structure
 
+```
 src/
 ├── config/
 ├── controllers/
@@ -55,8 +56,7 @@ src/
 ├── services/
 ├── utils/
 └── app.ts
-
-
+```
 
 ## API Endpoints
 
