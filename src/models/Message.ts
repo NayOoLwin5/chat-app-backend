@@ -10,7 +10,7 @@ interface IMessage extends Document {
 
 const messageSchema = new Schema<IMessage>({
   sender: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  receiver: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  receiver: [{ type: Schema.Types.ObjectId, ref: 'User', required: true }],
   content: { type: String, required: true },
   chatRoom: { type: Schema.Types.ObjectId, ref: 'ChatRoom', required: true },
   createdAt: { type: Date, default: Date.now }

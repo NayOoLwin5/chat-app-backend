@@ -1,0 +1,8 @@
+POST http://localhost:3000/chat/rooms
+Content-Type: application/json
+
+{
+  "name": "New Chat Room",
+  "participants": ["66b734e400533c42f5b56c6d", "66b72efe00533c42f5b55ec5"],
+  "isGroupChat": true
+}

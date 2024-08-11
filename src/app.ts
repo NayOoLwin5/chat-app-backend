@@ -1,14 +1,13 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import http from 'http';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes';
 import chatRoutes from './routes/chatRoutes';
 import userRoutes from './routes/userRoutes';
 import setupSocket from './config/socket';
 import './services/messageQueueProcessor';
-
-dotenv.config();
 
 const app = express();
 const server = http.createServer(app);

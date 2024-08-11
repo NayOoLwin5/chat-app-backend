@@ -5,9 +5,9 @@ export async function register(req: Request, res: Response) {
   try {
     const { email, password, name } = req.body;
     const user = await registerUser(email, password, name);
-    res.status(201).json(user);
+    res.status(201).json({ status: 'success', data: user });
   } catch (error) {
-    res.status(400).json({ message: (error as Error).message });
+    res.status(400).json({ status: 'error', message: (error as Error).message });
   }
 }
 
@@ -15,8 +15,8 @@ export async function login(req: Request, res: Response) {
   try {
     const { email, password } = req.body;
     const { user, token } = await loginUser(email, password);
-    res.json({ user, token });
+    res.status(201).json({ status: 'success', data: { user, token } });
   } catch (error) {
-    res.status(401).json({ message: (error as Error).message });
+    res.status(401).json({ status: 'error', message: (error as Error).message });
   }
 }

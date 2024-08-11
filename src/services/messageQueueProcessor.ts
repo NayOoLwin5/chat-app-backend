@@ -1,12 +1,32 @@
 import { messageQueue } from '../config/redis';
 import Message from '../models/Message';
+import ChatRoom from '../models/ChatRoom';
+import { encrypt } from '../utils/encryption';
 
 messageQueue.process('process-message', async (job: any) => {
-  const { messageId } = job.data;
-  const message = await Message.findById(messageId);
-  if (message) {
-    // Perform any time-consuming operations here
-    console.log(`Processing message: ${messageId}`);
-    // For example, you could analyze the message content, update user statistics, etc.
+  const { senderId, content, chatRoomId, timestamp } = job.data;
+
+  try {
+    const chatRoom = await ChatRoom.findById(chatRoomId).populate('participants');
+    if (!chatRoom) {
+      throw new Error(`ChatRoom not found for id: ${chatRoomId}`);
+    }
+    const receiverIds = chatRoom.participants.map((participant: any) => participant._id); 
+
+    const encryptedContent = encrypt(content);
+    const message = new Message({
+      sender: senderId,
+      receiver: receiverIds,
+      content: encryptedContent,
+      chatRoom: chatRoomId,
+      createdAt: new Date(timestamp)
+    });
+
+    await message.save();
+
+    console.log(`Processed and saved message: ${message._id}`);
+
+  } catch (error) {
+    console.error('Error processing message:', error);
   }
 });
