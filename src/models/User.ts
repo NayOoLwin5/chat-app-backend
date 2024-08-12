@@ -6,7 +6,6 @@ interface IUser extends Document {
   password: string;
   name: string;
   googleId?: string;
-  friends: mongoose.Types.ObjectId[];
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -14,8 +13,7 @@ const userSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   name: { type: String, required: true },
-  googleId: { type: String },
-  friends: [{ type: Schema.Types.ObjectId, ref: 'User' }]
+  googleId: { type: String }
 });
 
 userSchema.pre('save', async function(next) {

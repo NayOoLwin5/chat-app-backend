@@ -26,12 +26,13 @@ export default function setupSocket(server: HttpServer) {
   });
 
   io.on('connection', (socket: Socket) => {
+    const userId = socket.data.user.id;
+    redisClient.set(`userSocket:${userId}`, socket.id);
     console.log('User connected:', socket.data.user.id);
 
     socket.on('join-room', async (roomId: string) => {
       try {
-        const participantId = socket.data.user;
-        await addParticipant(roomId, participantId);
+        await addParticipant(roomId, userId);
         socket.join(roomId);
       } catch (error) {
         socket.emit('error', { message: (error as Error).message });
@@ -40,8 +41,8 @@ export default function setupSocket(server: HttpServer) {
 
     socket.on('leave-room', async (roomId: string) => {
       try {
-        const participantId = socket.data.user.id;
-        await removeParticipant(roomId, participantId);
+        redisClient.del(`userSocket:${userId}`);
+        await removeParticipant(roomId, userId);
         socket.leave(roomId);
       } catch (error) {
         socket.emit('error', { message: (error as Error).message });
@@ -51,7 +52,6 @@ export default function setupSocket(server: HttpServer) {
     socket.on('send-message', async (message: any) => {
       try {
           const { content, roomId } = message;
-          const senderId = socket.data.user.id;
 
           redisClient.lpush(`chat:${roomId}`, JSON.stringify(message))
             .then(() => redisClient.ltrim(`chat:${roomId}`, 0, 9))
@@ -59,7 +59,7 @@ export default function setupSocket(server: HttpServer) {
               socket.emit('error', { message: error.message });
             });
 
-          sendMessage(senderId, content, roomId);
+          sendMessage(userId, content, roomId);
           io.to(roomId).emit('new-message', content);
 
         } catch (error) {
@@ -68,7 +68,8 @@ export default function setupSocket(server: HttpServer) {
     });
 
     socket.on('disconnect', () => {
-      console.log('User disconnected:', socket.data.user.id);
+      redisClient.del(`userSocket:${userId}`);
+      console.log('User disconnected:', userId);
     });
   });
 

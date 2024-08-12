@@ -30,6 +30,9 @@ export async function addParticipant(chatRoomId: string, participantId: string) 
       throw new Error('Chat room not found');
     }
     const objectIdParticipant = new mongoose.Types.ObjectId(participantId);
+    if (chatRoom.participants.includes(objectIdParticipant)) {
+      return chatRoom;
+    }
     chatRoom.participants.push(objectIdParticipant);
     await chatRoom.save();
     return chatRoom;
@@ -51,6 +54,15 @@ export async function removeParticipant(chatRoomId: string, participantId: strin
     return chatRoom;
   } catch (error) {
     throw new Error(`Error removing participant: ${(error as Error).message}`);
+  }
+}
+
+export async function getUserChatRooms(userId: string) {
+  try {
+    const chatRooms = await ChatRoom.find({ participants: userId }).sort({ _id: 1 });
+    return chatRooms;
+  } catch (error) {
+    throw new Error(`Error getting chat rooms for user: ${(error as Error).message}`);
   }
 }
 

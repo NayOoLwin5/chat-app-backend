@@ -3,6 +3,7 @@ dotenv.config();
 import express from 'express';
 import http from 'http';
 import mongoose from 'mongoose';
+import cors from 'cors';
 import authRoutes from './routes/authRoutes';
 import chatRoutes from './routes/chatRoutes';
 import userRoutes from './routes/userRoutes';
@@ -14,6 +15,7 @@ const server = http.createServer(app);
 const io = setupSocket(server);
 
 app.use(express.json());
+app.use(cors());
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI!)
@@ -24,6 +26,7 @@ mongoose.connect(process.env.MONGODB_URI!)
 app.use('/auth', authRoutes);
 app.use('/chat', chatRoutes);
 app.use('/users', userRoutes);
+app.set('io', io);
 
 const PORT = process.env.PORT || 3000;
 

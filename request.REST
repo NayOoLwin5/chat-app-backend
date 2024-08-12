@@ -6,3 +6,27 @@ Content-Type: application/json
   "participants": ["66b734e400533c42f5b56c6d", "66b72efe00533c42f5b55ec5"],
   "isGroupChat": true
 }
+
+###
+POST http://localhost:3015/users/addFriend
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Yjg4M2I3ZDhiNTVmZGIxY2UyZTU5YSIsImlhdCI6MTcyMzM3ODM2MywiZXhwIjoxNzIzNDY0NzYzfQ.kcidEGS-ABbLv3tm9gBpxUDIWK6F-7oolnmb--mWbG0
+
+{
+  "friendId" : "66b883b7d8b55fdb1ce2e59a",
+  "roomId" : "66b8d6aa0d25a8e816f2c0e7"
+}
+
+###
+GET http://localhost:3015/users/all
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Yjg4M2I3ZDhiNTVmZGIxY2UyZTU5YSIsImlhdCI6MTcyMzM3ODM2MywiZXhwIjoxNzIzNDY0NzYzfQ.kcidEGS-ABbLv3tm9gBpxUDIWK6F-7oolnmb--mWbG0
+
+
+###
+GET http://localhost:3015/chat/rooms
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Yjg4M2I3ZDhiNTVmZGIxY2UyZTU5YSIsImlhdCI6MTcyMzM3ODM2MywiZXhwIjoxNzIzNDY0NzYzfQ.kcidEGS-ABbLv3tm9gBpxUDIWK6F-7oolnmb--mWbG0
+
+
+###
+GET http://localhost:3015/chat/rooms/66b9146205e8dcc82214828e/messages
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjhmY2QxMzI2NjNjNzI0OWQxMTEwYyIsImlhdCI6MTcyMzQ0NDU2OSwiZXhwIjoxNzIzNTMwOTY5fQ._jCeFzHx1DWkbIm2nRFjJFndtJkoh6aO9AYu4Q0M6I0

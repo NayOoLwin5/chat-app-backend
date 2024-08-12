@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createChatRoom, getChatRoom } from '../services/chatRoomService';
+import { createChatRoom, getUserChatRooms as getUserChatRoomsService } from '../services/chatRoomService';
 import { sendMessage, getRecentMessages } from '../services/messageService';
 
 export async function createRoom(req: Request, res: Response) {
@@ -19,5 +19,15 @@ export async function getRoomMessages(req: Request, res: Response) {
     res.status(200).json({ status: 'success', data: messages });
   } catch (error) {
     res.status(400).json({ status: 'error', message: (error as Error).message });
+  }
+}
+
+export async function getUserChatRooms(req: Request, res: Response) {
+  try {
+    const userId = (req.user as any).id;
+    const chatRooms = await getUserChatRoomsService(userId);
+    res.status(200).json({ status: 'success', data: chatRooms });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: (error as Error).message });
   }
 }

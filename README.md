@@ -66,7 +66,9 @@ src/
 - POST /chat/rooms - Create a new chat room
 - GET /chat/rooms/:roomId/messages - Get messages for a chat room
 - POST /chat/rooms/:roomId/messages - Send a message to a chat room
-- POST /users/friends - Add a friend
+- GET /chat/rooms - List all chat rooms for the authenticated user
+- POST /users/addFriend - Add a friend
+- GET /users/all - List all users except the authenticated user
 
 ## Socket.IO Events
 
