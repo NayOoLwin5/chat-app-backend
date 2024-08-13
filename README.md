@@ -1,6 +1,6 @@
 # Chat Application Backend
 
-This is the backend server for a real-time chat application built with Node.js, Express, TypeScript, MongoDB, and Socket.IO.
+This is the backend server for a real-time chat application built with Express, TypeScript, MongoDB, Bull.js and Socket.IO.
 
 ## Features
 
