@@ -49,17 +49,19 @@ export default function setupSocket(server: HttpServer) {
       }
     });
 
-    socket.on('send-message', async (message: any) => {
+    socket.on('send-message', (message: any) => {
       try {
           const { content, roomId } = message;
+          const timestamp = new Date(socket.handshake.time).toISOString();
+          const messageWithTimestamp = { ...message, timestamp };
 
-          redisClient.lpush(`chat:${roomId}`, JSON.stringify(message))
+          redisClient.lpush(`chat:${roomId}`, JSON.stringify(messageWithTimestamp))
             .then(() => redisClient.ltrim(`chat:${roomId}`, 0, 9))
             .catch((error) => {
               socket.emit('error', { message: error.message });
             });
 
-          sendMessage(userId, content, roomId);
+          sendMessage(userId, content, roomId, timestamp);
           io.to(roomId).emit('new-message', content);
 
         } catch (error) {
