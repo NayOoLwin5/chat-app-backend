@@ -8,7 +8,7 @@ interface IChatRoom extends Document {
 
 const chatRoomSchema = new Schema<IChatRoom>({
   name: { type: String, required: true },
-  participants: [{ type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true }],
+  participants: [{ type: Schema.Types.ObjectId, ref: 'User', required: true }],
   isGroupChat: { type: Boolean, default: false }
 });
 
