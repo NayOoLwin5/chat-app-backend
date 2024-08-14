@@ -62,7 +62,7 @@ export default function setupSocket(server: HttpServer) {
             });
 
           sendMessage(userId, content, roomId, timestamp);
-          io.to(roomId).emit('new-message', content);
+          io.to(roomId).emit('new-message', { content, timestamp , roomId });
 
         } catch (error) {
           socket.emit('error', { message: (error as Error).message });
