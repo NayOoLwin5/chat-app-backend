@@ -6,7 +6,7 @@ export function sendMessage(senderId: string, content: string, chatRoomId: strin
     .then(() => {
       console.log('Message added to queue successfully');
     })
-    .catch((error: any) => {
+    .catch((error: Error) => {
       console.error('Error adding message to queue:', error);
     });
 }

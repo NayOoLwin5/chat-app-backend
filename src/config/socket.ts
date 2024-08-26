@@ -5,6 +5,19 @@ import { sendMessage } from '../services/messageService';
 import { redisClient } from '../config/redis';
 import { addParticipant, removeParticipant } from '../services/chatRoomService';
 
+interface SocketMessage {
+  content: string;
+  roomId: string;
+  sender: string;
+  timestamp?: string;
+}
+
+interface DecodedToken {
+  id: string;
+  iat: number;
+  exp: number;
+}
+
 export default function setupSocket(server: HttpServer) {
   const io = new Server(server, {
     cors: {
@@ -13,24 +26,24 @@ export default function setupSocket(server: HttpServer) {
     }
   });
 
-  io.use((socket: Socket, next) => {
-    const token = socket.handshake.auth.token;
+  io.use((socket: Socket, next): void => {
+    const token: string = socket.handshake.auth.token;
     if (!token) {
       return next(new Error('Authentication error'));
     }
-    jwt.verify(token, process.env.JWT_SECRET!, (err: any, decoded: any) => {
+    jwt.verify(token, process.env.JWT_SECRET!, (err: null | jwt.VerifyErrors, decoded): void => {
       if (err) return next(new Error('Authentication error'));
-      socket.data.user = decoded;
+      socket.data.user = decoded as DecodedToken;
       next();
     });
   });
 
-  io.on('connection', (socket: Socket) => {
-    const userId = socket.data.user.id;
+  io.on('connection', (socket: Socket): void => {
+    const userId: string = socket.data.user.id;
     redisClient.set(`userSocket:${userId}`, socket.id);
     console.log('User connected:', socket.data.user.id);
 
-    socket.on('join-room', async (roomId: string) => {
+    socket.on('join-room', async (roomId: string): Promise<void> => {
       try {
         await addParticipant(roomId, userId);
         socket.join(roomId);
@@ -39,7 +52,7 @@ export default function setupSocket(server: HttpServer) {
       }
     });
 
-    socket.on('leave-room', async (roomId: string) => {
+    socket.on('leave-room', async (roomId: string): Promise<void> => {
       try {
         redisClient.del(`userSocket:${userId}`);
         await removeParticipant(roomId, userId);
@@ -49,15 +62,15 @@ export default function setupSocket(server: HttpServer) {
       }
     });
 
-    socket.on('send-message', (message: any) => {
+    socket.on('send-message', (message: SocketMessage): void => {
       try {
           const { content, roomId } = message;
-          const timestamp = new Date(socket.handshake.time).toISOString();
-          const messageWithTimestamp = { ...message, timestamp };
+          const timestamp: string = new Date(socket.handshake.time).toISOString();
+          const messageWithTimestamp: SocketMessage = { ...message, timestamp };
 
           redisClient.lpush(`chat:${roomId}`, JSON.stringify(messageWithTimestamp))
             .then(() => redisClient.ltrim(`chat:${roomId}`, 0, 9))
-            .catch((error) => {
+            .catch((error: Error) => {
               socket.emit('error', { message: error.message });
             });
 
@@ -69,7 +82,7 @@ export default function setupSocket(server: HttpServer) {
         }
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (): void => {
       redisClient.del(`userSocket:${userId}`);
       console.log('User disconnected:', userId);
     });

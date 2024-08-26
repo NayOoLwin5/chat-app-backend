@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-interface IChatRoom extends Document {
+export interface IChatRoom extends Document {
   name: string;
   participants: mongoose.Types.ObjectId[];
   isGroupChat: boolean;

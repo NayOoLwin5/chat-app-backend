@@ -1,22 +1,49 @@
 import { Request, Response } from 'express';
 import { registerUser, loginUser } from '../services/userService';
+import { IUser } from '../models/User';
 
-export async function register(req: Request, res: Response) {
+interface RegisterRequest extends Request {
+  body: {
+    email: string;
+    password: string;
+    name: string;
+  };
+}
+
+interface LoginRequest extends Request {
+  body: {
+    name: string;
+    email: string;
+    password: string;
+  };
+}
+
+interface ApiResponse<T> {
+  status: string;
+  data?: T;
+  message?: string;
+}
+
+export async function register(req: RegisterRequest, res: Response): Promise<void> {
   try {
     const { email, password, name } = req.body;
     const user = await registerUser(email, password, name);
-    res.status(201).json({ status: 'success', data: user });
+    const response: ApiResponse<IUser | null> = { status: 'success', data: user };
+    res.status(201).json(response);
   } catch (error) {
-    res.status(400).json({ status: 'error', message: (error as Error).message });
+    const response: ApiResponse<null> = { status: 'error', message: (error as Error).message };
+    res.status(400).json(response);
   }
 }
 
-export async function login(req: Request, res: Response) {
+export async function login(req: LoginRequest, res: Response): Promise<void> {
   try {
     const { email, password } = req.body;
     const { user, token } = await loginUser(email, password);
-    res.status(201).json({ status: 'success', data: { user, token } });
+    const response: ApiResponse<{ user: typeof user; token: string }> = { status: 'success', data: { user, token } };
+    res.status(201).json(response);
   } catch (error) {
-    res.status(401).json({ status: 'error', message: (error as Error).message });
+    const response: ApiResponse<null> = { status: 'error', message: (error as Error).message };
+    res.status(401).json(response);
   }
 }

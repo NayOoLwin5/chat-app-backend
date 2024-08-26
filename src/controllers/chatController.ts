@@ -2,32 +2,68 @@ import { Request, Response } from 'express';
 import { createChatRoom, getUserChatRooms as getUserChatRoomsService } from '../services/chatRoomService';
 import { sendMessage, getRecentMessages } from '../services/messageService';
 
-export async function createRoom(req: Request, res: Response) {
+interface CreateRoomRequest extends Request {
+  body: {
+    name: string;
+    participants: string[];
+    isGroupChat: boolean;
+  };
+}
+
+interface GetRoomMessagesRequest extends Request {
+  params: {
+    roomId: string;
+  };
+}
+
+interface GetUserChatRoomsRequest extends Request {
+  user: {
+    id: string;
+  };
+}
+
+interface ApiResponse<T> {
+  status: string;
+  data?: T;
+  message?: string;
+}
+
+export async function createRoom(req: CreateRoomRequest, res: Response): Promise<void> {
   try {
     const { name, participants, isGroupChat } = req.body;
     const chatRoom = await createChatRoom(name, participants, isGroupChat);
-    res.status(200).json({ status: 'success', data: chatRoom });
+    const response: ApiResponse<typeof chatRoom> = { status: 'success', data: chatRoom };
+    res.status(200).json(response);
   } catch (error) {
-    res.status(400).json({ status: 'error', message: (error as Error).message });
+    const response: ApiResponse<null> = { status: 'error', message: (error as Error).message };
+    res.status(400).json(response);
   }
 }
 
-export async function getRoomMessages(req: Request, res: Response) {
+export async function getRoomMessages(req: GetRoomMessagesRequest, res: Response): Promise<void> {
   try {
     const { roomId } = req.params;
     const messages = await getRecentMessages(roomId);
-    res.status(200).json({ status: 'success', data: messages });
+    const response: ApiResponse<typeof messages> = { status: 'success', data: messages };
+    res.status(200).json(response);
   } catch (error) {
-    res.status(400).json({ status: 'error', message: (error as Error).message });
+    const response: ApiResponse<null> = { status: 'error', message: (error as Error).message };
+    res.status(400).json(response);
   }
 }
 
-export async function getUserChatRooms(req: Request, res: Response) {
+export async function getUserChatRooms(req: Request, res: Response): Promise<void> {
   try {
-    const userId = (req.user as any).id;
+    if (!req.user) {
+      res.status(401).json({ status: 'error', message: 'User not authenticated' });
+      return;
+    }
+    const userId = (req.user as GetUserChatRoomsRequest['user']).id;
     const chatRooms = await getUserChatRoomsService(userId);
-    res.status(200).json({ status: 'success', data: chatRooms });
+    const response: ApiResponse<typeof chatRooms> = { status: 'success', data: chatRooms };
+    res.status(200).json(response);
   } catch (error) {
-    res.status(500).json({ status: 'error', message: (error as Error).message });
+    const response: ApiResponse<null> = { status: 'error', message: (error as Error).message };
+    res.status(500).json(response);
   }
 }
