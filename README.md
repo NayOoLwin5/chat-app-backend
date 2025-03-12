@@ -77,3 +77,7 @@ src/
 - 'join-room' - Join a chat room
 - 'leave-room' - Leave a chat room
 - 'send-message' - Send a message
+
+## Frontend Repo
+[https://github.com/NayOoLwin5/chat-app-frontend](https://github.com/NayOoLwin5/chat-app-frontend)
+
