@@ -23,6 +23,14 @@ mongoose.connect(process.env.MONGODB_URI!)
   .catch((err) => console.error('MongoDB connection error:', err));
 
 // Routes
+app.get('/health', (_req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    uptime: process.uptime(),
+    mongo: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    timestamp: new Date().toISOString()
+  });
+});
 app.use('/auth', authRoutes);
 app.use('/chat', chatRoutes);
 app.use('/users', userRoutes);

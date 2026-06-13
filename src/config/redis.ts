@@ -1,7 +1,9 @@
 import Redis from 'ioredis';
 import Bull from 'bull';
 
-const redisClient = new Redis(process.env.REDIS_URL || '');
-const messageQueue = new Bull('message-queue', process.env.REDIS_URL || '');
+const redisUrl = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+
+const redisClient = new Redis(redisUrl);
+const messageQueue = new Bull('message-queue', redisUrl);
 
 export { redisClient, messageQueue };

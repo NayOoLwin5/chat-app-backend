@@ -10,7 +10,7 @@ messageQueue.process('process-message', async (job: Job): Promise<void> => {
   const { senderId, content, chatRoomId, timestamp } = job.data;
   
   try {
-    const chatRoom: IChatRoom | null = await ChatRoom.findById(chatRoomId).populate('participants').lean();
+    const chatRoom: IChatRoom | null = await ChatRoom.findById(chatRoomId).populate('participants').lean<IChatRoom | null>();
     if (!chatRoom) {
       throw new Error(`ChatRoom not found for id: ${chatRoomId}`);
     }

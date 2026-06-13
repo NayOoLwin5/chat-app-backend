@@ -49,7 +49,7 @@ export async function getAllUsers(req: Request, res: Response): Promise<void> {
       return;
     }
     const currentUserId: string = (req as AuthenticatedRequest).user!.id;
-    const users: IUser[] = await User.find({ _id: { $ne: currentUserId } }, 'name email').lean();
+    const users: IUser[] = await User.find({ _id: { $ne: currentUserId } }, 'name email').lean<IUser[]>();
     const response: ApiResponse<typeof users> = { status: 'success', data: users };
     res.status(200).json(response);
   } catch (error) {
